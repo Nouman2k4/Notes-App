@@ -10,7 +10,8 @@ class Input extends Component {
         super(props);
         this.state = {
             title: "",
-            description: ""
+            description: "",
+            DeleteNote: -1 // Initial state for DeleteNote
         };
     }
 
@@ -30,31 +31,59 @@ class Input extends Component {
         this.setState({ title: "", description: "" });
     };
 
+    handleDeleteChange = (e) => {
+        this.setState({ DeleteNote: e.target.value });
+    };
+
+    handleDeleteSubmit = (e) => {
+        e.preventDefault();
+        const { DeleteNote } = this.state;
+        this.props.deleteContact(DeleteNote); // Call parent method to delete contact
+        this.setState({ DeleteNote: "" });
+    };
+
     render() {
         return (
-            <form className="input-form" onSubmit={this.handleSubmit}>
-                <div className="mb-3" style={customStyle}>
-                    <label htmlFor="titleInput" className="form-label">Enter your Title</label>
-                    <input
-                        type="text"
-                        className="form-control"
-                        id="titleInput"
-                        name="title"
-                        value={this.state.title}
-                        onChange={this.handleChange}
-                    />
-                    <label htmlFor="descriptionTextarea" className="form-label">Enter your note</label>
-                    <textarea
-                        className="form-control"
-                        id="descriptionTextarea"
-                        name="description"
-                        rows="6"
-                        value={this.state.description}
-                        onChange={this.handleChange}
-                    ></textarea>
+            <div className="d-flex justify-content-between">
+                <div>
+                    <form className="input-form" onSubmit={this.handleSubmit}>
+                        <div className="mb-3" style={customStyle}>
+                            <label htmlFor="titleInput" className="form-label">Enter your Title</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="titleInput"
+                                name="title"
+                                value={this.state.title}
+                                onChange={this.handleChange}
+                            />
+                            <label htmlFor="descriptionTextarea" className="form-label">Enter your note</label>
+                            <textarea
+                                className="form-control"
+                                id="descriptionTextarea"
+                                name="description"
+                                rows="6"
+                                value={this.state.description}
+                                onChange={this.handleChange}
+                            ></textarea>
+                        </div>
+                        <button type="submit" className="btn btn-primary">Submit</button>
+                    </form>
                 </div>
-                <button type="submit" className="btn btn-primary">Submit</button>
-            </form>
+                <div className='mx-3'>
+                    <form onSubmit={this.handleDeleteSubmit}>
+                        <label htmlFor="DeleteInput" className="form-label">Enter Note No to Delete</label>
+                        <input
+                            type="text"
+                            className="form-control"
+                            id="DeleteInput"
+                            name="DeleteNote"
+                            onChange={this.handleDeleteChange}
+                        />
+                        <button type="submit" className="btn btn-primary mt-4">Delete</button>
+                    </form>
+                </div>
+            </div>
         );
     }
 }

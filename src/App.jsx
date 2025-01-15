@@ -1,45 +1,71 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Notes from "./components/Notes";
 import Input from './components/imput';
-import defaultContacts from "./contact"; // Renamed to avoid confusion with state
+import defaultContacts from "./contact";
 
-const customStyle = {
-    display: 'flex', flexDirection: 'row', gap: '20px',
-    flexWrap: 'wrap',
-}
+const App = () => {
+    const [mode, setMode] = useState('light');
+    const [contacts, setContacts] = useState(defaultContacts);
 
-class App extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            contacts: defaultContacts // Initialize with default contacts
-        };
-    }
-
-    addContact = (contact) => {
-        this.setState(prevState => ({
-            contacts: [...prevState.contacts, contact]
-        }));
+    const customStyle = {
+        display: 'flex',
+        flexDirection: 'row',
+        gap: '20px',
+        flexWrap: 'wrap',
     };
 
-    render() {
-        return (
-            <div>
-                <Navbar />
-                <div className='container' style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column', gap: '20px', width: "100vw" }}>
-                    <div className="container" style={customStyle}>
-                        {this.state.contacts.map((contact, index) => (
-                            <Notes key={index} Name={contact.title} Descr={contact.description} />
-                        ))}
-                    </div>
-                    <Input addContact={this.addContact} />
+    const toggleMode = () => {
+        if (mode === 'dark') {
+            setMode('light');
+            applyLightModeStyles();
+        } else {
+            setMode('dark');
+            applyDarkModeStyles();
+        }
+    };
+
+    const applyLightModeStyles = () => {
+        document.body.style.backgroundColor = 'white';
+        document.body.style.color = 'black';
+        document.title = "Light Mode Enabled";
+    };
+
+    const applyDarkModeStyles = () => {
+        document.body.style.backgroundColor = '#042743';
+        document.body.style.color = 'white';
+        document.title = "Dark Mode Enabled";
+    };
+
+    const addContact = (contact) => {
+        setContacts(prevContacts => [...prevContacts, contact]);
+    };
+
+    const deleteContact = (index) => {
+        const idx = parseInt(index, 10);
+        if (!isNaN(idx)) {
+            setContacts(prevContacts => prevContacts.filter((_, i) => i !== idx));
+        }
+        else {
+            alert("Invalid index")
+        }
+    };
+
+    return (
+        <div>
+            <Navbar mode={mode} toggleMode={toggleMode} />
+            <div className='container' style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'column', gap: '20px', width: "100vw" }}>
+                <div className="container" style={customStyle}>
+                    {contacts.map((contact, index) => (
+                        <Notes key={index} index={index} Name={contact.title} Descr={contact.description} isDarkMode={mode === 'dark'} />
+                    ))}
                 </div>
-                <Footer />
+                <Input addContact={addContact} deleteContact={deleteContact} />
             </div>
-        );
-    }
-}
+            <Footer />
+        </div>
+    );
+};
 
 export default App;
